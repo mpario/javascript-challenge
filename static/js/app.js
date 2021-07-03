@@ -2,19 +2,32 @@
 var tableData = data;
 // console.log(tableData);
 
-var ufoTable = d3.select("#ufo-table")
-var tbody = d3.select("#ufo-table > tbody")
+var ufoTable = d3.select("#ufo-table");
+var tbody = d3.select("#ufo-table > tbody");
+
 
 //define function to build the table
 function buildTable(dataRows) {
+	//setting up comparison between intended and actual row counts
+	console.log(`appending ${dataRows.length} rows`);
+	var rowsAdded = 0;
 
-	tableData.forEach(item => {
+	//delete the old rows and columns of data
+	d3.selectAll("#ufo-table > tbody > tr > td").remove();
+	d3.selectAll("#ufo-table > tbody > tr").remove();
+
+	//add the new rows and columns of data
+	dataRows.forEach(item => {
 		var row = tbody.append("tr")
+		rowsAdded++;
 		Object.entries(item).forEach(([key, value]) => {
 			row.append("td").text(value);
 		})
 	})	
-};
+	
+	//finishing comparison of row counts
+	console.log(`appended ${rowsAdded} rows`);
+}
 
 //call the function
 buildTable(tableData);              
@@ -29,25 +42,19 @@ form.on("submit", runEnter);
 
 //allow users to filter
 function runEnter() {
-	//prevent page from refreshing
-	// d3.event.preventDefault();
 	//select the input element and get the raw HTML node
 	var inputElement = d3.select("#datetime");
 	var inputValue = inputElement.property("value");
 
 	console.log(inputValue);
-	console.log(tableData);
 
-	var filteredData = tableData.filter(dateEntry => dateEntry.datetime === inputValue);
+	if (inputValue !== "") {
+		var filteredData = tableData.filter(dateEntry => dateEntry.datetime === inputValue);		
+	}
+	else {
+		var filteredData = tableData;
+	}
 
 	console.log(filteredData);
-	
-	filteredData.forEach(item => {
-		var row = tbody.append("tr")
-		Object.entries(item).forEach(([key, value]) => {
-			row.append("td").text(value);
-		})
-	})
-
 	buildTable(filteredData);		
-};
+}
